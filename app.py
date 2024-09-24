@@ -2,39 +2,40 @@ import streamlit as st
 from fpdf import FPDF
 from datetime import datetime
 
-# Función para generar el PDF con el logo y el formato similar al ejemplo proporcionado
+# Función para generar el PDF con el formato mejorado
 def generar_pdf(paciente, fecha, pruebas, precios):
     pdf = FPDF()
     pdf.add_page()
 
-    # Añadir el logo en la esquina superior izquierda (ajusta el nombre del archivo y la ruta si es necesario)
-    pdf.image('logo.png', 10, 8, 33)  # Coloca el logo en la parte superior izquierda, tamaño 33
-    pdf.set_font("Arial", "B", 12)
-    pdf.cell(200, 10, "Unilab - Laboratorio Clínico Especializado", ln=True, align="C")  # Título centrado
-    
-    # Fecha y ciudad alineada a la derecha
+    # Agregar logo en la parte superior izquierda
+    pdf.image('logo.png', 10, 8, 25)  # Logo ajustado con tamaño más pequeño
+
+    # Encabezado centrado
+    pdf.set_font("Arial", "B", 16)
+    pdf.cell(200, 10, "Unilab - Laboratorio Clínico Especializado", ln=True, align="C")
+
+    # Fecha y ciudad alineadas a la derecha
     pdf.set_font("Arial", "", 12)
     pdf.cell(200, 10, f"Cochabamba, {fecha}", ln=True, align="R")
     pdf.ln(10)
     
     # Título de la cotización
-    pdf.set_font("Arial", "B", 12)
+    pdf.set_font("Arial", "B", 14)
     pdf.cell(200, 10, "REF: COTIZACIÓN EXÁMENES DE LABORATORIO", ln=True, align="L")
     pdf.ln(5)
 
-    # Información del paciente y destinatario
+    # Información del destinatario
     pdf.set_font("Arial", "", 12)
-    pdf.cell(200, 10, f"Señores:", ln=True)
-    pdf.cell(200, 10, f"Hospital: Cossmil", ln=True)
+    pdf.cell(200, 10, "Señores:", ln=True)
+    pdf.cell(200, 10, "Hospital: Cossmil", ln=True)
     pdf.cell(200, 10, f"Paciente: {paciente}", ln=True)
     pdf.cell(200, 10, "Presente.-", ln=True)
-    pdf.ln(5)
+    pdf.ln(10)
 
-    # Introducción de la tabla
-    pdf.set_font("Arial", "", 12)
+    # Texto de introducción a la tabla
     pdf.cell(200, 10, "Atendiendo su solicitud, le cotizamos los siguientes exámenes:", ln=True)
     pdf.ln(5)
-    
+
     # Tabla de exámenes y precios
     pdf.set_font("Arial", "B", 12)
     pdf.cell(130, 10, "EXAMEN DE LABORATORIO", border=1)
@@ -47,7 +48,8 @@ def generar_pdf(paciente, fecha, pruebas, precios):
         pdf.cell(50, 10, str(precios[i]), border=1, ln=True)
         total += precios[i]
 
-    # Total de la cotización
+    # Total
+    pdf.set_font("Arial", "B", 12)
     pdf.cell(130, 10, "TOTAL", border=1)
     pdf.cell(50, 10, f"{total} Bs", border=1, ln=True)
     pdf.ln(10)
@@ -68,7 +70,7 @@ def generar_pdf(paciente, fecha, pruebas, precios):
 
     return pdf
 
-# Streamlit App para generar la cotización y descargar el PDF
+# Interfaz de Streamlit para generar la cotización
 st.title("Generador de Cotizaciones de Laboratorio")
 
 # Entrada de datos para el paciente y la fecha
@@ -82,14 +84,14 @@ pruebas_dict = {
     "DPG Deaminado IgG": 220,
 }
 
-# Selección dinámica de las pruebas
+# Selección de las pruebas
 pruebas_seleccionadas = st.multiselect("Selecciona las pruebas", list(pruebas_dict.keys()))
 precios_seleccionados = [pruebas_dict[prueba] for prueba in pruebas_seleccionadas]
 
-# Botón para generar el PDF
+# Botón para generar y descargar el PDF
 if st.button("Generar Cotización"):
     if paciente and pruebas_seleccionadas:
-        # Generar PDF
+        # Generar PDF con el formato ajustado
         pdf = generar_pdf(paciente, fecha.strftime("%d de %B de %Y"), pruebas_seleccionadas, precios_seleccionados)
         
         # Guardar el archivo PDF
